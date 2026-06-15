@@ -108,6 +108,70 @@ def imprimir_tabla(datos: list[dict]) -> None:
             print(f"{pais['nombre']:<20} | {pais['poblacion']:<15} | {pais['superficie']:<18} | {pais['continente']:<15}")
         print("-" * 75)
 
+def buscar_pais(datos: list[dict]) -> None:
+    """
+    Busca países por coincidencia exacta o parcial en el nombre.
+    
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- BUSCAR PAÍS ---")
+    busqueda = pedir_texto("Ingrese el nombre a buscar (puede ser parcial): ").strip().lower()
+    resultados = [pais for pais in datos if busqueda in pais['nombre'].lower()]
+    if resultados:
+        print("\nResultados de la búsqueda:")
+        imprimir_tabla(resultados)
+    else:
+        print("No se encontraron países que coincidan con la búsqueda.")
+
+def actualizar_pais(datos: list[dict]) -> None:
+    """
+    Actualiza la población y superficie de un país existente,
+    y lo guarda en el csv.
+    
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- ACTUALIZAR PAÍS ---")
+    nombre = pedir_texto("Ingrese el nombre exacto del país a actualizar: ")
+    for pais in datos:
+        if pais['nombre'].lower() == nombre.lower():
+            print(f"\nPaís encontrado: {pais['nombre']} | Continente: {pais['continente']}")
+            print(f"Población actual: {pais['poblacion']} | Superficie actual: {pais['superficie']} km²")
+            pais['poblacion'] = pedir_entero("Ingrese la NUEVA población: ")
+            pais['superficie'] = pedir_entero("Ingrese la NUEVA superficie en km²: ")
+            guardar_datos(ruta_csv, datos)
+            print("Datos actualizados exitosamente.")
+            break
+    print("Error: No se encontró ningún país con ese nombre exacto.")
+
+def agregar_pais(datos: list[dict]) -> None:
+    """
+    Agrega un nuevo país validando las entradas,
+    y lo guarda en el csv.
+    
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- AGREGAR NUEVO PAÍS ---")
+    nombre = pedir_texto("Ingrese el nombre del país: ")
+    
+    # Verificamos si ya existe, para evitar duplicados exactos
+    if any(pais['nombre'].lower() == nombre.lower() for pais in datos):
+        print("Error: el país ya existe en el registro.")
+    else:
+        poblacion = pedir_entero("Ingrese la población: ")
+        superficie = pedir_entero("Ingrese la superficie en km²: ")
+        continente = pedir_texto("Ingrese el continente: ")
+        datos.append = {
+            'nombre': nombre,
+            'poblacion': poblacion,
+            'superficie': superficie,
+            'continente': continente
+        }
+        guardar_datos(ruta_csv, datos)
+        print("País agregado exitosamente.")
+
 def main():
     # Cargamos los datos al abrir el programa
     datos = cargar_datos(ruta_csv)
@@ -129,9 +193,9 @@ def main():
         try:
             opcion_menu = int(input("Seleccione una opción: "))
             if opcion_menu == 1: imprimir_tabla(datos)
-            elif opcion_menu == 2: pass # buscar_pais(datos)
-            elif opcion_menu == 3: pass # actualizar_pais(datos)
-            elif opcion_menu == 4: pass # agregar_pais(datos)
+            elif opcion_menu == 2: buscar_pais(datos)
+            elif opcion_menu == 3: actualizar_pais(datos)
+            elif opcion_menu == 4: agregar_pais(datos)
             elif opcion_menu == 5: pass # filtrar_paises(datos)
             elif opcion_menu == 6: pass # ordenar_paises(datos)
             elif opcion_menu == 7: pass # mostrar_estadisticas(datos)
