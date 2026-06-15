@@ -30,7 +30,7 @@ def pedir_entero(mensaje: str) -> int:
     """
     while True:
         try:
-            entrada = input(mensaje.strip())
+            entrada = input(mensaje).strip()
             if not entrada:
                 print("Error: este campo no puede quedar vacío.")
                 continue
@@ -102,11 +102,11 @@ def imprimir_tabla(datos: list[dict]) -> None:
     if not datos:
         print("No hay datos para mostrar.")
     else:    
-        print(f"\n{'Nombre':<20} | {'Población':<15} | {'Superficie (km²)':<18} | {'Continente':<15}")
-        print("-" * 75)
+        print(f"\n{'Nombre':<20} | {'Población':<20} | {'Superficie (km²)':<20} | {'Continente':<20}")
+        print("-" * 80)
         for pais in datos:
-            print(f"{pais['nombre']:<20} | {pais['poblacion']:<15} | {pais['superficie']:<18} | {pais['continente']:<15}")
-        print("-" * 75)
+            print(f"{pais['nombre']:<20} | {format(pais['poblacion'],","):<20} | {format(pais['superficie'],","):<20} | {pais['continente']:<20}")
+        print("-" * 80)
 
 def buscar_pais(datos: list[dict]) -> None:
     """
@@ -116,7 +116,7 @@ def buscar_pais(datos: list[dict]) -> None:
         datos (list[dict]): lista de diccionarios con la información.
     """
     print("\n--- BUSCAR PAÍS ---")
-    busqueda = pedir_texto("Ingrese el nombre a buscar (puede ser parcial): ").strip().lower()
+    busqueda = pedir_texto("Ingrese el nombre a buscar (puede ser parcial): ").lower()
     resultados = [pais for pais in datos if busqueda in pais['nombre'].lower()]
     if resultados:
         print("\nResultados de la búsqueda:")
@@ -140,9 +140,8 @@ def actualizar_pais(datos: list[dict]) -> None:
             print(f"Población actual: {pais['poblacion']} | Superficie actual: {pais['superficie']} km²")
             pais['poblacion'] = pedir_entero("Ingrese la NUEVA población: ")
             pais['superficie'] = pedir_entero("Ingrese la NUEVA superficie en km²: ")
-            guardar_datos(ruta_csv, datos)
             print("Datos actualizados exitosamente.")
-            break
+            return
     print("Error: No se encontró ningún país con ese nombre exacto.")
 
 def agregar_pais(datos: list[dict]) -> None:
@@ -155,7 +154,6 @@ def agregar_pais(datos: list[dict]) -> None:
     """
     print("\n--- AGREGAR NUEVO PAÍS ---")
     nombre = pedir_texto("Ingrese el nombre del país: ")
-    
     # Verificamos si ya existe, para evitar duplicados exactos
     if any(pais['nombre'].lower() == nombre.lower() for pais in datos):
         print("Error: el país ya existe en el registro.")
@@ -163,14 +161,102 @@ def agregar_pais(datos: list[dict]) -> None:
         poblacion = pedir_entero("Ingrese la población: ")
         superficie = pedir_entero("Ingrese la superficie en km²: ")
         continente = pedir_texto("Ingrese el continente: ")
-        datos.append = {
+        datos.append({
             'nombre': nombre,
             'poblacion': poblacion,
             'superficie': superficie,
             'continente': continente
-        }
-        guardar_datos(ruta_csv, datos)
+        })
         print("País agregado exitosamente.")
+
+def filtrar_paises(datos: list[dict]) -> None:
+    """
+    Aplica filtros según el continente, población o superficie.
+    Luego, muestra la tabla con los resultados.
+
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- FILTRAR PAÍSES ---")
+    print("1. Por Continente")
+    print("2. Por Rango de Población")
+    print("3. Por Rango de Superficie")
+    try:
+        resultados = []
+        opcion_submenu = int(input("Seleccione el tipo de filtro (1-3): ").strip())
+        if opcion_submenu == 1:
+            continente = pedir_texto("Ingrese el continente a filtrar: ").lower()
+            resultados = [pais for pais in datos if continente in pais['continente'].lower()]
+        elif opcion_submenu == 2:
+            print("\nDefina el rango de Población")
+            poblacion_minima = pedir_entero("Población mínima: ")
+            poblacion_maxima = pedir_entero("Población máxima: ")
+            resultados = [pais for pais in datos if poblacion_minima <= pais['poblacion'] <= poblacion_maxima]
+        elif opcion_submenu == 3:
+            print("\nDefina el rango de Superficie")
+            superficie_minima = pedir_entero("Superficie mínima: ")
+            superficie_maxima = pedir_entero("Superficie máxima: ")
+            resultados = [pais for pais in datos if superficie_minima <= pais['superficie'] <= superficie_maxima]
+        else: raise ValueError
+    except ValueError:
+        print("Error: Entrada no válida. Debe ingresar un número entero entre 1 y 3.")
+        return
+    if resultados: imprimir_tabla(resultados)
+    else: print("No se encontraron países que cumplan con los criterios especificados.")
+
+def ordenar_paises(datos: list[dict]) -> None:
+    """
+    Ordena según el nombre, población, superficie o continente.
+    Luego, muestra la tabla con los resultados.
+
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- ORDENAR PAÍSES ---")
+    print("1. Por Nombre")
+    print("2. Por Población")
+    print("3. Por Superficie")
+    print("4. Por Continente")
+    try:
+        opcion_submenu = int(input("Seleccione el tipo de filtro (1-4): ").strip())
+        if opcion_submenu not in range(1, 5): raise ValueError
+        orden = input("¿Desea orden ascendente o descendente? (a/d): ").strip().lower()
+        while orden not in ['a', 'd']:
+            orden = input("Entrada inválida. Ingrese 'a' para ascendente o 'd' para descendente: ").strip().lower()
+        criterio = list(datos[0].keys())[opcion_submenu - 1]
+        datos_ordenados = sorted(datos, key = lambda x: x[criterio], reverse = (orden == 'd'))
+    except ValueError:
+        print("Error: Entrada no válida. Debe ingresar un número entero entre 1 y 4.")
+        return
+    imprimir_tabla(datos_ordenados)
+
+def mostrar_estadisticas(datos: list[dict]) -> None:
+    """
+    Calcula y muestra estadísticas generales del dataset.
+    
+    Args:
+        datos (list[dict]): lista de diccionarios con la información.
+    """
+    print("\n--- ESTADÍSTICAS ---")
+    if not datos:
+        print("Error: No hay datos suficientes para calcular estadísticas.")
+        return
+    # País con mayor y menor población
+    pais_mayor_poblacion = max(datos, key = lambda x: x['poblacion'])
+    pais_menor_poblacion = min(datos, key = lambda x: x['poblacion'])
+    print(f"País con MAYOR población: {pais_mayor_poblacion['nombre']} ({format(pais_mayor_poblacion['poblacion'], ",")} habitantes)")
+    print(f"País con MENOR población: {pais_menor_poblacion['nombre']} ({format(pais_menor_poblacion['poblacion'], ",")} habitantes)")
+    # Promedios
+    total_poblacion = sum(pais['poblacion'] for pais in datos)
+    total_superficie = sum(pais['superficie'] for pais in datos)
+    total_paises = len(datos)
+    print(f"\nPromedio de población global: {total_poblacion / total_paises:,.2f} habitantes")
+    print(f"Promedio de superficie global: {total_superficie / total_paises:,.2f} km²")
+    # Cantidad de países por continente
+    continentes = list()
+    for pais in datos: continentes.append(pais['continente'])
+    print("\nCantidad de países registrados por continente:")
+    for continente in set(continentes): print(f" - {continente}: {continentes.count(continente)} países")
 
 def main():
     # Cargamos los datos al abrir el programa
@@ -188,7 +274,7 @@ def main():
         print("5. Filtrar países")
         print("6. Ordenar países")
         print("7. Mostrar estadísticas")
-        print("8. Salir")
+        print("8. Guardar y Salir")
         print("="*40)
         try:
             opcion_menu = int(input("Seleccione una opción: "))
@@ -196,13 +282,14 @@ def main():
             elif opcion_menu == 2: buscar_pais(datos)
             elif opcion_menu == 3: actualizar_pais(datos)
             elif opcion_menu == 4: agregar_pais(datos)
-            elif opcion_menu == 5: pass # filtrar_paises(datos)
-            elif opcion_menu == 6: pass # ordenar_paises(datos)
-            elif opcion_menu == 7: pass # mostrar_estadisticas(datos)
-            elif opcion_menu == 8: print("Finalizando la ejecución del sistema.")
+            elif opcion_menu == 5: filtrar_paises(datos)
+            elif opcion_menu == 6: ordenar_paises(datos)
+            elif opcion_menu == 7: mostrar_estadisticas(datos)
+            elif opcion_menu == 8: guardar_datos(ruta_csv, datos)
             else: raise ValueError
         except ValueError:
             print("Error: Entrada no válida. Debe ingresar un número entero entre 1 y 8.")
+    print("Finalizando ejecución del sistema.")
 
 if __name__ == "__main__":
     main()
