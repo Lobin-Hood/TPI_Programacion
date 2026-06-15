@@ -1,6 +1,5 @@
 # Nombre del archivo donde se encuentran los datos
 ruta_csv = "data/paises.csv"
-respaldo_csv = "data/BackUp.csv"
 
 def pedir_texto(mensaje: str) -> str:
     """
