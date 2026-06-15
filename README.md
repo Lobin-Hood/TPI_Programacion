@@ -26,23 +26,23 @@ El programa cuenta con un menú interactivo que ofrece las siguientes funcionali
 ## 📁 Estructura del Proyecto
 
 El repositorio consta de los siguientes archivos principales:
-*   `main.py`: Contiene el código fuente completo del programa, modularizado en funciones con sus respectivos *Type Hints* y *Docstrings*.
+*   `scripts/main.py`: Contiene el código fuente completo del programa, modularizado en funciones con sus respectivos *Type Hints* y *Docstrings*.
 *   `data/paises.csv`: Archivo de base de datos que almacena los registros iniciales y los cambios realizados por el usuario.
 
 ## 💻 Instalación y Uso
 
 1.  Clonar este repositorio en tu máquina local:
 ```bash
-    git clone [https://github.com/Lobin-Hood/TPI_Programacion.git](https://github.com/Lobin-Hood/TPI_Programacion.git)
-    ```
+    git clone https://github.com/Lobin-Hood/TPI_Programacion
+```
 2.  Navegar a la carpeta del proyecto:
 ```bash
     cd TPI_Programacion
-    ```
+```
 3.  Ejecutar el script principal desde la terminal:
 ```bash
     python main.py
-    ```
+```
 
 > **Nota:** No es necesario instalar librerías adicionales ni entornos virtuales, ya que el proyecto utiliza exclusivamente la biblioteca estándar de Python.
 
