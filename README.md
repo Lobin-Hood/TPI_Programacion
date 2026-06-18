@@ -50,5 +50,9 @@ El repositorio consta de los siguientes archivos principales:
 
 *   **LOBO, Pablo (M26 C1-24, R-Villa María)**
 
+## 🔗 Links Útiles
+[Documentación en PDF](https://drive.google.com/file/d/1RXM6RWEWXStXB094moeBWPjBmnXchSCm)
+[Video Explicativo](https://drive.google.com/file/d/1su4veKbbsOHClB14P6T4hWD12n0OWzIB)
+
 ---
 *Proyecto desarrollado para la cátedra de Programación 1 - [1° cuatrimestre 2026].*
